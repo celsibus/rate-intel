@@ -27,7 +27,11 @@ Dashboard de inteligencia de tarifas para hoteles pequeños/medianos que no pued
 
 ## Fase 2 (Semana 2-3)
 - [x] Alertas WhatsApp (Backend + Frontend completado 2026-02-25)
-- [ ] Multi-hotel dashboard
+- [x] Multi-hotel dashboard (2026-02-25 19:00 UTC)
+  - Portfolio tab con vista agregada de todos los hoteles propios
+  - Selector de hotel en dashboard para filtrar por ciudad
+  - Métricas por hotel: precio actual, posición vs mercado, competidores
+  - Totales: hoteles, valor total, posición promedio vs mercado
 - [ ] Forecast de demanda
 - [ ] Integración con PMS (API genérica)
 

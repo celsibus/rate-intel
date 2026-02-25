@@ -9,11 +9,13 @@ Dashboard de inteligencia de tarifas para hoteles pequeños/medianos que no pued
 - **Cadena:** $199/mes (hasta 10 hoteles)
 
 ## MVP Features (Semana 1)
-- [ ] Scraper de Booking.com para tarifas de competidores
-- [ ] Dashboard con comparativa de precios
-- [ ] Gráfico de evolución de tarifas (últimos 30 días)
-- [ ] Alerta por email cuando competidor cambia tarifa >10%
-- [ ] Recomendación de precio con IA (Claude)
+- [x] Scraper de Booking.com para tarifas de competidores
+- [x] Dashboard con comparativa de precios
+- [x] Gráfico de evolución de tarifas (últimos 30 días)
+- [x] Alerta por email cuando competidor cambia tarifa >10%
+- [x] Recomendación de precio con IA (Claude)
+
+**MVP COMPLETADO: 2026-02-25 03:00 UTC**
 
 ## Tech Stack
 - Backend: Node.js + Express

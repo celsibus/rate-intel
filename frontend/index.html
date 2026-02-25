@@ -105,6 +105,15 @@
                   <input type="checkbox" id="alertEmail" checked> Notificar por email
                 </label>
               </div>
+              <div class="form-row">
+                <label>
+                  <input type="checkbox" id="alertWhatsapp"> Notificar por WhatsApp
+                </label>
+              </div>
+              <div class="form-row" id="whatsappNumberRow" style="display: none;">
+                <label>Número WhatsApp:</label>
+                <input type="tel" id="alertWhatsappNumber" placeholder="+573001234567">
+              </div>
               <button class="btn" onclick="createAlert()">Crear Alerta</button>
             </fieldset>
           </div>

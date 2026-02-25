@@ -26,7 +26,7 @@ Dashboard de inteligencia de tarifas para hoteles pequeños/medianos que no pued
 - Hosting: Render
 
 ## Fase 2 (Semana 2-3)
-- [ ] Alertas WhatsApp
+- [x] Alertas WhatsApp (Backend + Frontend completado 2026-02-25)
 - [ ] Multi-hotel dashboard
 - [ ] Forecast de demanda
 - [ ] Integración con PMS (API genérica)

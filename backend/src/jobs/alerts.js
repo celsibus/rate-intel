@@ -12,6 +12,13 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// Twilio client for WhatsApp
+let twilioClient = null;
+if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+  const twilio = require('twilio');
+  twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+}
+
 /**
  * Check for price changes and send alerts
  */
@@ -55,6 +62,11 @@ async function checkAndSendAlerts() {
         // Send email alert
         if (alert.notify_email && alert.user_email) {
           await sendEmailAlert(alert, oldPrice, newPrice, percentChange);
+        }
+        
+        // Send WhatsApp alert
+        if (alert.notify_whatsapp && alert.whatsapp_number) {
+          await sendWhatsAppAlert(alert, oldPrice, newPrice, percentChange);
         }
         
         // Log alert history
@@ -119,4 +131,41 @@ async function sendEmailAlert(alert, oldPrice, newPrice, percentChange) {
   }
 }
 
-module.exports = { checkAndSendAlerts, sendEmailAlert };
+/**
+ * Send WhatsApp alert via Twilio
+ */
+async function sendWhatsAppAlert(alert, oldPrice, newPrice, percentChange) {
+  if (!twilioClient) {
+    console.log('[ALERTS] WhatsApp disabled: Twilio not configured');
+    return;
+  }
+  
+  const direction = percentChange > 0 ? '📈 SUBIÓ' : '📉 BAJÓ';
+  const sign = percentChange > 0 ? '+' : '';
+  
+  const message = `*${direction} ${Math.abs(percentChange).toFixed(1)}%*
+
+🏨 *${alert.hotel_name}*
+
+💰 Precio anterior: $${oldPrice.toLocaleString('es-CO')}
+💵 Precio nuevo: $${newPrice.toLocaleString('es-CO')}
+📊 Cambio: ${sign}${percentChange.toFixed(1)}%
+
+_Alerta de RateIntel_`;
+  
+  try {
+    const whatsappNumber = alert.whatsapp_number.replace(/[^0-9]/g, '');
+    
+    await twilioClient.messages.create({
+      from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
+      to: `whatsapp:+${whatsappNumber}`,
+      body: message
+    });
+    
+    console.log(`[ALERTS] WhatsApp sent to ${alert.whatsapp_number}`);
+  } catch (err) {
+    console.error(`[ALERTS] Failed to send WhatsApp to ${alert.whatsapp_number}:`, err.message);
+  }
+}
+
+module.exports = { checkAndSendAlerts, sendEmailAlert, sendWhatsAppAlert };

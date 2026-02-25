@@ -356,9 +356,10 @@ function renderAlertList(alerts) {
       <br>
       <small>
         ${a.notify_email ? '📧 Email' : ''} 
-        ${a.notify_whatsapp ? '📱 WhatsApp' : ''}
+        ${a.notify_whatsapp ? `📱 WhatsApp (${a.whatsapp_number || 'N/A'})` : ''}
         ${a.is_active ? '✅ Activa' : '❌ Inactiva'}
       </small>
+      <button class="btn-small" onclick="deleteAlert(${a.id})">🗑️</button>
     </div>
   `).join('');
 }
@@ -388,6 +389,13 @@ async function createAlert() {
   const hotelId = document.getElementById('alertHotel').value;
   const thresholdPercent = document.getElementById('alertThreshold').value;
   const notifyEmail = document.getElementById('alertEmail').checked;
+  const notifyWhatsapp = document.getElementById('alertWhatsapp').checked;
+  const whatsappNumber = document.getElementById('alertWhatsappNumber').value;
+  
+  if (notifyWhatsapp && !whatsappNumber) {
+    alert('Ingresa el número de WhatsApp');
+    return;
+  }
   
   try {
     setStatus('Creando alerta...');
@@ -395,7 +403,7 @@ async function createAlert() {
     await fetch(`${API_BASE}/alerts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ hotelId, thresholdPercent, notifyEmail })
+      body: JSON.stringify({ hotelId, thresholdPercent, notifyEmail, notifyWhatsapp, whatsappNumber })
     });
     
     loadAlerts();
@@ -404,6 +412,32 @@ async function createAlert() {
   } catch (err) {
     console.error('Error creating alert:', err);
     setStatus('Error creando alerta');
+  }
+}
+
+// Toggle WhatsApp number field visibility
+document.addEventListener('DOMContentLoaded', () => {
+  const whatsappCheckbox = document.getElementById('alertWhatsapp');
+  const whatsappRow = document.getElementById('whatsappNumberRow');
+  
+  if (whatsappCheckbox && whatsappRow) {
+    whatsappCheckbox.addEventListener('change', () => {
+      whatsappRow.style.display = whatsappCheckbox.checked ? 'flex' : 'none';
+    });
+  }
+});
+
+async function deleteAlert(alertId) {
+  if (!confirm('¿Eliminar esta alerta?')) return;
+  
+  try {
+    setStatus('Eliminando alerta...');
+    await fetch(`${API_BASE}/alerts/${alertId}`, { method: 'DELETE' });
+    loadAlerts();
+    setStatus('Alerta eliminada');
+  } catch (err) {
+    console.error('Error deleting alert:', err);
+    setStatus('Error eliminando alerta');
   }
 }
 

@@ -70,18 +70,46 @@ router.delete('/:id', async (req, res) => {
 router.get('/history', async (req, res) => {
   try {
     const userId = req.query.userId || 1;
-    const result = await db.query(`
+    const unforwardedOnly = req.query.unforwarded === 'true';
+    
+    let query = `
       SELECT ah.*, h.name as hotel_name
       FROM alert_history ah
       JOIN alerts a ON ah.alert_id = a.id
       JOIN hotels h ON a.hotel_id = h.id
       WHERE a.user_id = $1
-      ORDER BY ah.sent_at DESC
-      LIMIT 50
-    `, [userId]);
+    `;
+    
+    if (unforwardedOnly) {
+      query += ` AND (ah.forwarded IS NULL OR ah.forwarded = false)`;
+    }
+    
+    query += ` ORDER BY ah.sent_at DESC LIMIT 50`;
+    
+    const result = await db.query(query, [userId]);
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching alert history:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+// Mark alerts as forwarded (for Clawdbot integration)
+router.post('/history/mark-forwarded', async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: 'ids array required' });
+    }
+    
+    await db.query(`
+      UPDATE alert_history SET forwarded = true 
+      WHERE id = ANY($1::int[])
+    `, [ids]);
+    
+    res.json({ success: true, marked: ids.length });
+  } catch (err) {
+    console.error('Error marking alerts forwarded:', err);
     res.status(500).json({ error: 'Database error' });
   }
 });

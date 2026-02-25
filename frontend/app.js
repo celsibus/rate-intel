@@ -2,6 +2,7 @@
 
 const API_BASE = '/api';
 let priceChart = null;
+let ownHotels = []; // Cache of own hotels for selectors
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadHotels();
   loadRates();
   loadAlerts();
+  loadPortfolio();
 });
 
 // Tab Navigation
@@ -33,6 +35,7 @@ function setDefaultDates() {
   
   document.getElementById('checkInDate').value = formatDate(tomorrow);
   document.getElementById('aiDate').value = formatDate(tomorrow);
+  document.getElementById('portfolioDate').value = formatDate(tomorrow);
 }
 
 // Format date as YYYY-MM-DD
@@ -53,8 +56,12 @@ async function loadHotels() {
     const response = await fetch(`${API_BASE}/hotels`);
     const hotels = await response.json();
     
+    // Cache own hotels
+    ownHotels = hotels.filter(h => h.is_own_hotel);
+    
     renderHotelList(hotels);
     populateHotelSelects(hotels);
+    populateDashboardHotelSelect(ownHotels);
     
   } catch (err) {
     console.error('Error loading hotels:', err);
@@ -99,6 +106,17 @@ function populateHotelSelects(hotels) {
   
   alertSelect.innerHTML = competitorOptions || '<option>No hay competidores</option>';
   aiSelect.innerHTML = ownOptions || '<option>No hay hotel propio</option>';
+}
+
+function populateDashboardHotelSelect(hotels) {
+  const select = document.getElementById('dashboardHotelSelect');
+  if (!select) return;
+  
+  const options = hotels.map(h => 
+    `<option value="${h.id}">${h.name} (${h.city})</option>`
+  ).join('');
+  
+  select.innerHTML = `<option value="">Todos los hoteles</option>${options}`;
 }
 
 async function addHotel() {
@@ -153,13 +171,16 @@ async function deleteHotel(id) {
 
 async function loadRates() {
   const checkIn = document.getElementById('checkInDate').value;
+  const ownHotelId = document.getElementById('dashboardHotelSelect')?.value || '';
   
   try {
     setStatus('Cargando tarifas...');
     
+    const hotelParam = ownHotelId ? `&ownHotelId=${ownHotelId}` : '';
+    
     const [ratesRes, compareRes] = await Promise.all([
-      fetch(`${API_BASE}/rates/latest?checkIn=${checkIn}`),
-      fetch(`${API_BASE}/rates/compare?checkIn=${checkIn}`)
+      fetch(`${API_BASE}/rates/latest?checkIn=${checkIn}${hotelParam}`),
+      fetch(`${API_BASE}/rates/compare?checkIn=${checkIn}${hotelParam}`)
     ]);
     
     const rates = await ratesRes.json();
@@ -510,4 +531,123 @@ async function getAiRecommendation() {
     container.innerHTML = '<p>Error al consultar IA</p>';
     setStatus('Error IA');
   }
+}
+
+// ==================== PORTFOLIO ====================
+
+async function loadPortfolio() {
+  const checkIn = document.getElementById('portfolioDate')?.value || new Date().toISOString().split('T')[0];
+  
+  try {
+    setStatus('Cargando portfolio...');
+    
+    const response = await fetch(`${API_BASE}/hotels/portfolio?checkIn=${checkIn}`);
+    const data = await response.json();
+    
+    renderPortfolioSummary(data.totals);
+    renderPortfolioGrid(data.hotels);
+    
+    setStatus('Portfolio actualizado');
+    
+  } catch (err) {
+    console.error('Error loading portfolio:', err);
+    document.getElementById('portfolioGrid').innerHTML = '<p>Error cargando portfolio</p>';
+    setStatus('Error');
+  }
+}
+
+function renderPortfolioSummary(totals) {
+  const container = document.getElementById('portfolioSummary');
+  if (!container) return;
+  
+  if (!totals || totals.hotelCount === 0) {
+    container.innerHTML = `
+      <div class="portfolio-stat">
+        <div class="value">0</div>
+        <div class="label">Hoteles</div>
+      </div>
+    `;
+    return;
+  }
+  
+  const positionColor = parseFloat(totals.avgMarketPosition) > 0 ? '#ff6b6b' : '#51cf66';
+  const positionSign = parseFloat(totals.avgMarketPosition) > 0 ? '+' : '';
+  
+  container.innerHTML = `
+    <div class="portfolio-stat">
+      <div class="value">${totals.hotelCount}</div>
+      <div class="label">Hoteles</div>
+    </div>
+    <div class="portfolio-stat">
+      <div class="value">$${Number(totals.totalValue).toLocaleString()}</div>
+      <div class="label">Valor Total</div>
+    </div>
+    <div class="portfolio-stat">
+      <div class="value" style="color: ${positionColor}">${positionSign}${totals.avgMarketPosition}%</div>
+      <div class="label">vs Mercado</div>
+    </div>
+  `;
+}
+
+function renderPortfolioGrid(hotels) {
+  const container = document.getElementById('portfolioGrid');
+  if (!container) return;
+  
+  if (!hotels || hotels.length === 0) {
+    container.innerHTML = `
+      <p style="text-align: center; padding: 40px; color: #8e8e93;">
+        No hay hoteles propios configurados.<br>
+        Ve a la pestaña "Hoteles" para agregar tu primer hotel.
+      </p>
+    `;
+    return;
+  }
+  
+  container.innerHTML = hotels.map(hotel => {
+    const position = hotel.marketPosition;
+    let positionBadge = '';
+    
+    if (position !== null) {
+      const posNum = parseFloat(position);
+      const posClass = posNum > 5 ? 'above' : posNum < -5 ? 'below' : 'neutral';
+      const posSign = posNum > 0 ? '+' : '';
+      positionBadge = `<div class="position-badge ${posClass}">${posSign}${position}%</div>`;
+    }
+    
+    const price = hotel.current_price 
+      ? `$${Number(hotel.current_price).toLocaleString()}`
+      : 'Sin datos';
+    
+    const comp = hotel.competitors;
+    const compAvg = comp.avg ? `$${Number(comp.avg).toLocaleString()}` : '-';
+    const compMin = comp.min ? `$${Number(comp.min).toLocaleString()}` : '-';
+    const compMax = comp.max ? `$${Number(comp.max).toLocaleString()}` : '-';
+    
+    return `
+      <div class="portfolio-card">
+        ${positionBadge}
+        <div class="hotel-name">${hotel.name}</div>
+        <div class="hotel-city">${hotel.city}, ${hotel.country || 'Colombia'}</div>
+        
+        <div class="metrics">
+          <div class="metric">
+            <div class="value">${price}</div>
+            <div class="label">Tu Tarifa</div>
+          </div>
+          <div class="metric">
+            <div class="value">${compAvg}</div>
+            <div class="label">Prom. Comp.</div>
+          </div>
+          <div class="metric">
+            <div class="value">${compMin}</div>
+            <div class="label">Mín. Comp.</div>
+          </div>
+          <div class="metric">
+            <div class="value">${comp.count}</div>
+            <div class="label">Competidores</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
 }

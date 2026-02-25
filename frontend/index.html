@@ -23,10 +23,30 @@
       <div class="window-body">
         <!-- Tabs -->
         <div class="tabs">
+          <button class="tab" data-tab="portfolio">🏢 Portfolio</button>
           <button class="tab active" data-tab="dashboard">📊 Dashboard</button>
           <button class="tab" data-tab="hotels">🏨 Hoteles</button>
           <button class="tab" data-tab="alerts">🔔 Alertas</button>
           <button class="tab" data-tab="ai">🤖 IA</button>
+        </div>
+        
+        <!-- Portfolio Tab (Multi-hotel overview) -->
+        <div class="tab-content" id="portfolio">
+          <div class="section-title">Portfolio de Hoteles</div>
+          
+          <div class="date-selector">
+            <label>Fecha check-in:</label>
+            <input type="date" id="portfolioDate">
+            <button class="btn btn-primary" onclick="loadPortfolio()">Actualizar</button>
+          </div>
+          
+          <div class="portfolio-summary" id="portfolioSummary">
+            <!-- Aggregate metrics will appear here -->
+          </div>
+          
+          <div class="portfolio-grid" id="portfolioGrid">
+            <div class="loading">Cargando portfolio...</div>
+          </div>
         </div>
         
         <!-- Dashboard Tab -->
@@ -34,6 +54,10 @@
           <div class="section-title">Comparativa de Tarifas</div>
           
           <div class="date-selector">
+            <label>Mi Hotel:</label>
+            <select id="dashboardHotelSelect" onchange="loadRates()">
+              <option value="">Todos los hoteles</option>
+            </select>
             <label>Fecha check-in:</label>
             <input type="date" id="checkInDate">
             <button class="btn btn-primary" onclick="loadRates()">Actualizar</button>

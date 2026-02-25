@@ -1,18 +1,16 @@
 -- RateIntel Database Schema
 
--- Users (hoteliers)
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   email VARCHAR(255) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
+  password_hash VARCHAR(255),
   name VARCHAR(255),
-  plan VARCHAR(50) DEFAULT 'basic', -- basic, pro, chain
+  plan VARCHAR(50) DEFAULT 'basic',
   stripe_customer_id VARCHAR(255),
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Hotels (owned by users)
 CREATE TABLE IF NOT EXISTS hotels (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -20,11 +18,10 @@ CREATE TABLE IF NOT EXISTS hotels (
   city VARCHAR(255) NOT NULL,
   country VARCHAR(100) DEFAULT 'Colombia',
   booking_url VARCHAR(500),
-  is_own_hotel BOOLEAN DEFAULT false, -- true = user's hotel, false = competitor
+  is_own_hotel BOOLEAN DEFAULT false,
   created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Rate snapshots (scraped data)
 CREATE TABLE IF NOT EXISTS rate_snapshots (
   id SERIAL PRIMARY KEY,
   hotel_id INTEGER REFERENCES hotels(id) ON DELETE CASCADE,
@@ -37,7 +34,6 @@ CREATE TABLE IF NOT EXISTS rate_snapshots (
   scraped_at TIMESTAMP DEFAULT NOW()
 );
 
--- Alerts
 CREATE TABLE IF NOT EXISTS alerts (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -50,7 +46,6 @@ CREATE TABLE IF NOT EXISTS alerts (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Alert history
 CREATE TABLE IF NOT EXISTS alert_history (
   id SERIAL PRIMARY KEY,
   alert_id INTEGER REFERENCES alerts(id) ON DELETE CASCADE,
@@ -60,13 +55,12 @@ CREATE TABLE IF NOT EXISTS alert_history (
   sent_at TIMESTAMP DEFAULT NOW()
 );
 
--- AI recommendations
 CREATE TABLE IF NOT EXISTS ai_recommendations (
   id SERIAL PRIMARY KEY,
   hotel_id INTEGER REFERENCES hotels(id) ON DELETE CASCADE,
   check_in DATE,
   recommended_price DECIMAL(10, 2),
-  confidence DECIMAL(3, 2), -- 0.00 to 1.00
+  confidence DECIMAL(3, 2),
   reasoning TEXT,
   competitor_avg DECIMAL(10, 2),
   competitor_min DECIMAL(10, 2),
@@ -74,8 +68,8 @@ CREATE TABLE IF NOT EXISTS ai_recommendations (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Indexes for performance
+-- Insert default user
+INSERT INTO users (email, name) VALUES ('celso@faranda.com', 'Celso Fernández') ON CONFLICT DO NOTHING;
+
 CREATE INDEX IF NOT EXISTS idx_rate_snapshots_hotel_date ON rate_snapshots(hotel_id, check_in);
-CREATE INDEX IF NOT EXISTS idx_rate_snapshots_scraped ON rate_snapshots(scraped_at);
 CREATE INDEX IF NOT EXISTS idx_hotels_user ON hotels(user_id);
-CREATE INDEX IF NOT EXISTS idx_alerts_user ON alerts(user_id);

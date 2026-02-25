@@ -1,4 +1,6 @@
 const nodemailer = require('nodemailer');
+const fs = require('fs');
+const path = require('path');
 const db = require('../db');
 
 // Email transporter (configure with your SMTP)
@@ -18,6 +20,9 @@ if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
   const twilio = require('twilio');
   twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 }
+
+// Local alert queue for Clawdbot integration (no external services needed)
+const ALERT_QUEUE_PATH = process.env.ALERT_QUEUE_PATH || '/root/clawd/rate-intel/alerts-queue.json';
 
 /**
  * Check for price changes and send alerts
@@ -59,13 +64,16 @@ async function checkAndSendAlerts() {
       if (Math.abs(percentChange) >= parseFloat(alert.threshold_percent)) {
         console.log(`[ALERTS] ${alert.hotel_name}: ${percentChange.toFixed(1)}% change detected`);
         
-        // Send email alert
+        // Always queue locally for Clawdbot (primary notification method)
+        await queueLocalAlert(alert, oldPrice, newPrice, percentChange);
+        
+        // Send email alert (optional, if configured)
         if (alert.notify_email && alert.user_email) {
           await sendEmailAlert(alert, oldPrice, newPrice, percentChange);
         }
         
-        // Send WhatsApp alert
-        if (alert.notify_whatsapp && alert.whatsapp_number) {
+        // Send WhatsApp alert via Twilio (optional, if configured)
+        if (alert.notify_whatsapp && alert.whatsapp_number && twilioClient) {
           await sendWhatsAppAlert(alert, oldPrice, newPrice, percentChange);
         }
         
@@ -168,4 +176,49 @@ _Alerta de RateIntel_`;
   }
 }
 
-module.exports = { checkAndSendAlerts, sendEmailAlert, sendWhatsAppAlert };
+/**
+ * Queue alert locally for Clawdbot to pick up and forward
+ * This is the default notification method - no external services needed
+ */
+async function queueLocalAlert(alert, oldPrice, newPrice, percentChange) {
+  const direction = percentChange > 0 ? '📈 SUBIÓ' : '📉 BAJÓ';
+  const sign = percentChange > 0 ? '+' : '';
+  
+  const alertData = {
+    id: `${Date.now()}-${alert.id}`,
+    timestamp: new Date().toISOString(),
+    hotel_name: alert.hotel_name,
+    direction,
+    old_price: oldPrice,
+    new_price: newPrice,
+    percent_change: percentChange,
+    threshold: alert.threshold_percent,
+    message: `*${direction} ${Math.abs(percentChange).toFixed(1)}%*\n\n🏨 *${alert.hotel_name}*\n\n💰 Anterior: $${oldPrice.toLocaleString('es-CO')}\n💵 Nuevo: $${newPrice.toLocaleString('es-CO')}\n📊 Cambio: ${sign}${percentChange.toFixed(1)}%`
+  };
+  
+  try {
+    // Read existing queue or create empty array
+    let queue = [];
+    if (fs.existsSync(ALERT_QUEUE_PATH)) {
+      const content = fs.readFileSync(ALERT_QUEUE_PATH, 'utf8');
+      queue = JSON.parse(content);
+    }
+    
+    // Add new alert
+    queue.push(alertData);
+    
+    // Keep only last 100 alerts
+    if (queue.length > 100) {
+      queue = queue.slice(-100);
+    }
+    
+    // Write back
+    fs.writeFileSync(ALERT_QUEUE_PATH, JSON.stringify(queue, null, 2));
+    console.log(`[ALERTS] Queued local alert for ${alert.hotel_name}`);
+    
+  } catch (err) {
+    console.error('[ALERTS] Failed to queue local alert:', err.message);
+  }
+}
+
+module.exports = { checkAndSendAlerts, sendEmailAlert, sendWhatsAppAlert, queueLocalAlert };

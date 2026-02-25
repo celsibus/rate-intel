@@ -1,0 +1,630 @@
+/* Early iPhone iOS (2007-2012) Skeuomorphic Theme */
+@import url('https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@300;400;500;700&display=swap');
+
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  background: linear-gradient(180deg, #c5ccd4 0%, #9aa5b1 100%);
+  min-height: 100vh;
+  /* Linen texture overlay */
+  background-image: 
+    url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.03'%3E%3Cpath d='M0 0h20v20H0V0zm10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14z'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(180deg, #c5ccd4 0%, #9aa5b1 100%);
+}
+
+.desktop {
+  padding: 20px;
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Main App Container - iPhone Style */
+.window {
+  background: #e8e8e8;
+  border-radius: 12px;
+  box-shadow: 
+    0 2px 8px rgba(0,0,0,0.3),
+    0 0 0 1px rgba(255,255,255,0.5) inset,
+    0 1px 0 rgba(255,255,255,0.8) inset;
+  overflow: hidden;
+}
+
+/* Navigation Bar - Dark iOS Style */
+.title-bar {
+  background: linear-gradient(180deg, #5c6570 0%, #333940 50%, #1c1e22 51%, #2c3036 100%);
+  padding: 12px 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  border-bottom: 1px solid #000;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.1) inset;
+}
+
+.title-bar-text {
+  color: white;
+  font-weight: 700;
+  font-size: 18px;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.6);
+  letter-spacing: -0.5px;
+}
+
+.title-bar-controls {
+  display: none; /* Hide Windows-style controls */
+}
+
+.window-body {
+  padding: 0;
+  background: linear-gradient(180deg, #e8e8e8 0%, #d0d0d0 100%);
+}
+
+/* Tab Bar - iOS Bottom Navigation Style */
+.tabs {
+  display: flex;
+  gap: 0;
+  background: linear-gradient(180deg, #7a8087 0%, #4a4f54 50%, #2e3236 51%, #3a3f44 100%);
+  border-top: 1px solid #000;
+  padding: 4px 2px 2px 2px;
+  position: relative;
+}
+
+.tabs::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255,255,255,0.15);
+}
+
+.tab {
+  flex: 1;
+  padding: 8px 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 10px;
+  color: #8a9199;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.5);
+  transition: all 0.2s;
+}
+
+.tab::before {
+  content: '';
+  width: 30px;
+  height: 30px;
+  display: block;
+  border-radius: 6px;
+  margin-bottom: 2px;
+}
+
+/* Tab icons as gradients */
+.tab[data-tab="dashboard"]::before {
+  background: linear-gradient(180deg, #5ac8fa 0%, #007aff 100%);
+  box-shadow: 0 2px 4px rgba(0,122,255,0.4);
+}
+
+.tab[data-tab="hotels"]::before {
+  background: linear-gradient(180deg, #ffcc00 0%, #ff9500 100%);
+  box-shadow: 0 2px 4px rgba(255,149,0,0.4);
+}
+
+.tab[data-tab="alerts"]::before {
+  background: linear-gradient(180deg, #ff6b6b 0%, #ff3b30 100%);
+  box-shadow: 0 2px 4px rgba(255,59,48,0.4);
+}
+
+.tab[data-tab="ai"]::before {
+  background: linear-gradient(180deg, #bf5af2 0%, #af52de 100%);
+  box-shadow: 0 2px 4px rgba(175,82,222,0.4);
+}
+
+.tab.active {
+  color: white;
+}
+
+.tab:hover {
+  color: #c8cdd3;
+}
+
+/* Content Area */
+.tab-content {
+  display: none;
+  padding: 12px;
+  min-height: 450px;
+  background: linear-gradient(180deg, #eaeaea 0%, #d8d8d8 100%);
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Section Titles */
+.section-title {
+  font-weight: 700;
+  font-size: 17px;
+  margin: 0 0 12px 0;
+  padding: 8px 0;
+  color: #4c5564;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+  border-bottom: 1px solid #c8c8c8;
+}
+
+/* iOS Glossy Buttons */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ffffff 0%, #f3f3f3 50%, #e2e2e2 51%, #d0d0d0 100%);
+  box-shadow: 
+    0 1px 3px rgba(0,0,0,0.2),
+    0 1px 0 rgba(255,255,255,0.8) inset;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+  transition: all 0.15s;
+}
+
+.btn:active {
+  background: linear-gradient(180deg, #d0d0d0 0%, #c0c0c0 50%, #b0b0b0 51%, #a0a0a0 100%);
+  box-shadow: 
+    0 1px 2px rgba(0,0,0,0.1) inset,
+    0 1px 0 rgba(255,255,255,0.4);
+}
+
+/* Blue iOS Button */
+.btn-primary {
+  background: linear-gradient(180deg, #62b0fb 0%, #309afb 50%, #1c84fc 51%, #0066e5 100%);
+  color: white;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.3);
+  box-shadow: 
+    0 1px 3px rgba(0,102,229,0.4),
+    0 1px 0 rgba(255,255,255,0.3) inset;
+}
+
+.btn-primary:active {
+  background: linear-gradient(180deg, #1c84fc 0%, #0066e5 50%, #0055cc 51%, #0044aa 100%);
+}
+
+/* Green iOS Button */
+.btn-success {
+  background: linear-gradient(180deg, #7cd97c 0%, #5ac95a 50%, #44ba44 51%, #34a834 100%);
+  color: white;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.3);
+  box-shadow: 
+    0 1px 3px rgba(52,168,52,0.4),
+    0 1px 0 rgba(255,255,255,0.3) inset;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  margin-left: 8px;
+}
+
+/* iOS Grouped Table Style */
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 12px 0;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 
+    0 1px 3px rgba(0,0,0,0.1),
+    0 0 0 1px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+legend {
+  padding: 12px 15px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #6d7a8a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  width: 100%;
+  background: transparent;
+  margin-bottom: 0;
+}
+
+.form-row {
+  margin: 0;
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #e5e5e5;
+  background: white;
+}
+
+.form-row:last-of-type {
+  border-bottom: none;
+}
+
+.form-row label {
+  min-width: 90px;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-row input[type="text"],
+.form-row input[type="tel"],
+.form-row input[type="number"],
+.form-row input[type="date"],
+.form-row select {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  background: #fafafa;
+  font-size: 14px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05) inset;
+}
+
+.form-row input:focus,
+.form-row select:focus {
+  outline: none;
+  border-color: #007aff;
+  box-shadow: 0 0 0 3px rgba(0,122,255,0.2);
+}
+
+/* iOS Toggle Switch Style for Checkboxes */
+.form-row input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 51px;
+  height: 31px;
+  background: linear-gradient(180deg, #e5e5e5 0%, #f0f0f0 100%);
+  border-radius: 16px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15) inset;
+}
+
+.form-row input[type="checkbox"]::before {
+  content: '';
+  position: absolute;
+  width: 27px;
+  height: 27px;
+  background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: all 0.3s;
+}
+
+.form-row input[type="checkbox"]:checked {
+  background: linear-gradient(180deg, #5bd95b 0%, #34c534 100%);
+  box-shadow: 0 1px 3px rgba(52,197,52,0.4) inset;
+}
+
+.form-row input[type="checkbox"]:checked::before {
+  left: 22px;
+}
+
+/* Date Selector */
+.date-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding: 12px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.date-selector input {
+  padding: 8px 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* Rate Cards - iOS Card Style */
+.rate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.rate-card {
+  background: white;
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 
+    0 1px 3px rgba(0,0,0,0.12),
+    0 0 0 1px rgba(0,0,0,0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.rate-card:active {
+  transform: scale(0.98);
+}
+
+.rate-card.own-hotel {
+  background: linear-gradient(180deg, #fff9e6 0%, #fff3cc 100%);
+  box-shadow: 
+    0 1px 3px rgba(255,149,0,0.2),
+    0 0 0 1px rgba(255,149,0,0.3);
+}
+
+.rate-card h4 {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rate-card .price {
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(180deg, #007aff 0%, #0055cc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.rate-card .meta {
+  font-size: 11px;
+  color: #8e8e93;
+  margin-top: 6px;
+}
+
+/* Stats Bar - iOS Segmented Style */
+.stats-bar {
+  display: flex;
+  gap: 0;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 15px;
+  overflow: hidden;
+}
+
+.stat {
+  flex: 1;
+  text-align: center;
+  padding: 12px 8px;
+  border-right: 1px solid #e5e5e5;
+}
+
+.stat:last-child {
+  border-right: none;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #007aff;
+}
+
+.stat-label {
+  font-size: 10px;
+  color: #8e8e93;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* Chart Container */
+.chart-container {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  height: 220px;
+}
+
+/* Hotel List */
+.hotel-list {
+  margin-top: 15px;
+}
+
+.hotel-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: white;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.hotel-item.own {
+  background: linear-gradient(180deg, #fff9e6 0%, #fff3cc 100%);
+}
+
+.hotel-item .delete-btn {
+  background: linear-gradient(180deg, #ff6b6b 0%, #ff3b30 100%);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Alert List */
+.alert-list, .alert-history {
+  margin-top: 15px;
+}
+
+.alert-item, .history-item {
+  padding: 12px 15px;
+  background: white;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.history-item.up {
+  border-left: 4px solid #ff3b30;
+}
+
+.history-item.down {
+  border-left: 4px solid #34c759;
+}
+
+/* AI Result - iOS Card */
+.ai-result {
+  margin-top: 15px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 
+    0 2px 8px rgba(0,0,0,0.12),
+    0 0 0 1px rgba(0,0,0,0.06);
+}
+
+.ai-recommendation {
+  text-align: center;
+}
+
+.ai-price {
+  font-size: 48px;
+  font-weight: 700;
+  background: linear-gradient(180deg, #5856d6 0%, #af52de 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 15px 0;
+}
+
+.ai-confidence {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.confidence-bar {
+  width: 120px;
+  height: 8px;
+  background: #e5e5e5;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.confidence-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #34c759 0%, #30d158 100%);
+  border-radius: 4px;
+}
+
+.ai-reasoning {
+  margin-top: 15px;
+  padding: 12px;
+  background: linear-gradient(180deg, #f5f5f7 0%, #ebebed 100%);
+  border-radius: 8px;
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Status Bar - iOS Style */
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 15px;
+  background: linear-gradient(180deg, #fafafa 0%, #e8e8e8 100%);
+  border-top: 1px solid #c8c8c8;
+  font-size: 11px;
+  color: #8e8e93;
+}
+
+/* Loading Spinner */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #8e8e93;
+}
+
+.loading::before {
+  content: '';
+  display: block;
+  width: 30px;
+  height: 30px;
+  margin: 0 auto 10px;
+  border: 3px solid #e5e5e5;
+  border-top-color: #007aff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .desktop {
+    padding: 0;
+  }
+  
+  .window {
+    border-radius: 0;
+  }
+  
+  .rate-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .date-selector {
+    flex-wrap: wrap;
+  }
+  
+  .stats-bar {
+    flex-wrap: wrap;
+  }
+  
+  .stat {
+    flex: 1 1 50%;
+  }
+}
+
+/* Add subtle shine effect to cards */
+.rate-card::after,
+.hotel-item::after,
+.alert-item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%);
+  border-radius: 10px 10px 0 0;
+  pointer-events: none;
+}
+
+.rate-card, .hotel-item, .alert-item {
+  position: relative;
+  overflow: hidden;
+}

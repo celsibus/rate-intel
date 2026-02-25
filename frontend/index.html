@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RateIntel - Revenue Intelligence</title>
-  <link rel="stylesheet" href="styles.css">
+  <!-- Theme: styles.css = Windows 95, styles-ios.css = Early iPhone -->
+  <link rel="stylesheet" href="styles-ios.css">
 </head>
 <body>
   <div class="desktop">
@@ -35,8 +36,8 @@
           <div class="date-selector">
             <label>Fecha check-in:</label>
             <input type="date" id="checkInDate">
-            <button class="btn" onclick="loadRates()">Actualizar</button>
-            <button class="btn" onclick="triggerScrape()">🔄 Scrape Now</button>
+            <button class="btn btn-primary" onclick="loadRates()">Actualizar</button>
+            <button class="btn btn-success" onclick="triggerScrape()">🔄 Scrape</button>
           </div>
           
           <div class="rate-grid" id="rateGrid">
@@ -76,7 +77,7 @@
                   <input type="checkbox" id="isOwnHotel"> Es mi hotel (no competidor)
                 </label>
               </div>
-              <button class="btn" onclick="addHotel()">Agregar</button>
+              <button class="btn btn-primary" onclick="addHotel()">Agregar</button>
             </fieldset>
           </div>
           
@@ -114,7 +115,7 @@
                 <label>Número WhatsApp:</label>
                 <input type="tel" id="alertWhatsappNumber" placeholder="+573001234567">
               </div>
-              <button class="btn" onclick="createAlert()">Crear Alerta</button>
+              <button class="btn btn-primary" onclick="createAlert()">Crear Alerta</button>
             </fieldset>
           </div>
           
@@ -143,7 +144,7 @@
                 <label>Fecha:</label>
                 <input type="date" id="aiDate">
               </div>
-              <button class="btn" onclick="getAiRecommendation()">🤖 Obtener Recomendación</button>
+              <button class="btn btn-primary" onclick="getAiRecommendation()">🤖 Obtener Recomendación</button>
             </fieldset>
           </div>
           
